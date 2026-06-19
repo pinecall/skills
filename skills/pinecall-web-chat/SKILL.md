@@ -31,7 +31,9 @@ table below indexes every page; open the `references/…` file for the full text
 - **TTS model is auto-derived from `language`** — non-English agents (e.g.
   `language: "es"`) default ElevenLabs to `eleven_multilingual_v2` so numbers,
   dates and currency are pronounced correctly (flash/turbo don't normalize text).
-  English stays on `eleven_flash_v2_5`. Override with `voice: { ..., model: "..." }`.
+  English stays on `eleven_flash_v2_5`. To keep flash on a non-English agent
+  (lower latency/cost), set the top-level `flash: true` flag. To pin any model,
+  use `voice: { ..., model: "..." }` (explicit model always wins over `flash`).
 - **Greeting**: inbound → `greeting` field in `pc.agent()`; outbound → `greeting`
   field in `agent.dial()`. It is sugar for `call.say()` in `call.started`.
 - **Auth**: `new Pinecall()` reads `PINECALL_API_KEY` from env and auto-connects.
