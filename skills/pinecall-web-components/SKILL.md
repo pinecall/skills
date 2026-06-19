@@ -5,11 +5,11 @@ description: >-
 license: MIT
 ---
 
-# @pinecall/web (Web Components)
+# Web components
 
 @pinecall/web web components — framework-agnostic custom elements.
 
-This skill bundles the official Pinecall documentation for **@pinecall/web (Web Components)**. The
+This skill bundles the official Pinecall documentation for **Web components**. The
 table below indexes every page; open the `references/…` file for the full text
 (loaded on demand). Source of truth: <https://docs.pinecall.io>.
 

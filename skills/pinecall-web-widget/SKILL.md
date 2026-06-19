@@ -5,11 +5,11 @@ description: >-
 license: MIT
 ---
 
-# @pinecall/web (React Widget)
+# React widget
 
 @pinecall/web React widget — VoiceWidget props, theming, useVoiceSession hook, client tools.
 
-This skill bundles the official Pinecall documentation for **@pinecall/web (React Widget)**. The
+This skill bundles the official Pinecall documentation for **React widget**. The
 table below indexes every page; open the `references/…` file for the full text
 (loaded on demand). Source of truth: <https://docs.pinecall.io>.
 

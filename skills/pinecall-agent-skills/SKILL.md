@@ -1,22 +1,21 @@
 ---
-name: pinecall-web-chat
+name: pinecall-agent-skills
 description: >-
-  @pinecall/web/chat — browser text chat (ChatSession, ChatView). Use when the user is building, configuring, or debugging with @pinecall/sdk. Keywords: chat, chatsession, text chat, @pinecall/web/chat.
+  @pinecall/skills — install the Pinecall docs as Agent Skills into Claude Code, Cursor, Antigravity, Copilot. Use when the user is building, configuring, or debugging with @pinecall/sdk. Keywords: agent skills, @pinecall/skills, claude code, cursor, antigravity, copilot, skills add, install skills.
 license: MIT
 ---
 
-# Text chat
+# Agent Skills
 
-@pinecall/web/chat — browser text chat (ChatSession, ChatView).
+@pinecall/skills — install the Pinecall docs as Agent Skills into Claude Code, Cursor, Antigravity, Copilot.
 
-This skill bundles the official Pinecall documentation for **Text chat**. The
+This skill bundles the official Pinecall documentation for **Agent Skills**. The
 table below indexes every page; open the `references/…` file for the full text
 (loaded on demand). Source of truth: <https://docs.pinecall.io>.
 
 | Page | What it covers | Open |
 |------|----------------|------|
-| **@pinecall/web/chat** | Text chat client for Pinecall voice agents. Framework-agnostic core + React hook. | [`references/web/chat/overview.md`](references/web/chat/overview.md) · [docs](https://docs.pinecall.io/web/chat/overview) |
-| **ChatSession API** | Full reference for ChatSession (vanilla) and usePinecallChat (React). | [`references/web/chat/chat-session.md`](references/web/chat/chat-session.md) · [docs](https://docs.pinecall.io/web/chat/chat-session) |
+| **Agent Skills (@pinecall/skills)** | Drop the Pinecall docs into Claude Code, Cursor, Antigravity, Copilot or any agent that speaks the open Agent Skills format — so your coding agent builds voice & chat agents the right way, offline, with the correct defaults. | [`references/skills.md`](references/skills.md) · [docs](https://docs.pinecall.io/skills) |
 
 
 ## House rules — always apply

@@ -78,25 +78,30 @@ const GROUP_MAP = {
     blurb: "@pinecall/sdk API reference — Pinecall, Agent, Call, ReplyStream.",
     keywords: "api, pc.agent, agent.dial, call object, reply stream, replyStream, server sdk surface",
   },
-  "@pinecall/web/core (Voice)": {
+  "Voice — core": {
     slug: "pinecall-web-voice",
     blurb: "@pinecall/web/core — browser WebRTC voice (VoiceSession, state & phases, DataChannel protocol).",
     keywords: "webrtc, voice session, browser voice, datachannel, @pinecall/web/core",
   },
-  "@pinecall/web (React Widget)": {
+  "React widget": {
     slug: "pinecall-web-widget",
     blurb: "@pinecall/web React widget — VoiceWidget props, theming, useVoiceSession hook, client tools.",
     keywords: "react widget, voicewidget, useVoiceSession, theming, props, client tools, @pinecall/web",
   },
-  "@pinecall/web/chat (Chat)": {
+  "Text chat": {
     slug: "pinecall-web-chat",
     blurb: "@pinecall/web/chat — browser text chat (ChatSession, ChatView).",
     keywords: "chat, chatsession, text chat, @pinecall/web/chat",
   },
-  "@pinecall/web (Web Components)": {
+  "Web components": {
     slug: "pinecall-web-components",
     blurb: "@pinecall/web web components — framework-agnostic custom elements.",
     keywords: "web components, custom element, framework-agnostic widget",
+  },
+  "Agent Skills": {
+    slug: "pinecall-agent-skills",
+    blurb: "@pinecall/skills — install the Pinecall docs as Agent Skills into Claude Code, Cursor, Antigravity, Copilot.",
+    keywords: "agent skills, @pinecall/skills, claude code, cursor, antigravity, copilot, skills add, install skills",
   },
   Reference: {
     slug: "pinecall-reference",
@@ -136,9 +141,28 @@ function loadPage(slug) {
   };
 }
 
+// Flatten nested navigation groups into leaf groups (each with only page
+// slugs). A parent group whose `pages` are sub-groups contributes its leaves,
+// not itself — so one skill is still emitted per leaf section.
+function leafGroups(groups) {
+  const out = [];
+  for (const g of groups) {
+    const pages = g.pages || [];
+    const subs = pages.filter((p) => p && typeof p === "object" && Array.isArray(p.pages));
+    const slugs = pages.filter((p) => typeof p === "string");
+    if (subs.length) {
+      out.push(...leafGroups(subs));
+      if (slugs.length) out.push({ group: g.group, pages: slugs });
+    } else {
+      out.push({ group: g.group, pages: slugs });
+    }
+  }
+  return out;
+}
+
 // --- main
 const docsJson = JSON.parse(readFileSync(join(DOCS_DIR, "..", "docs.json"), "utf8"));
-const groups = docsJson.navigation.groups;
+const groups = leafGroups(docsJson.navigation.groups);
 
 if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
 mkdirSync(OUT_DIR, { recursive: true });

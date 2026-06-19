@@ -5,11 +5,11 @@ description: >-
 license: MIT
 ---
 
-# @pinecall/web/core (Voice)
+# Voice — core
 
 @pinecall/web/core — browser WebRTC voice (VoiceSession, state & phases, DataChannel protocol).
 
-This skill bundles the official Pinecall documentation for **@pinecall/web/core (Voice)**. The
+This skill bundles the official Pinecall documentation for **Voice — core**. The
 table below indexes every page; open the `references/…` file for the full text
 (loaded on demand). Source of truth: <https://docs.pinecall.io>.
 

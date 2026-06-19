@@ -45,6 +45,7 @@ cp -R skills/pinecall-guides ~/your-project/.claude/skills/
 | `pinecall-web-components` | Framework-agnostic web components |
 | `pinecall-reference` | CLI, STT/TTS/LLM providers, events, limits, REST |
 | `pinecall-security` | Security model |
+| `pinecall-agent-skills` | This package — installing the Pinecall skills into your agent |
 
 Every skill carries the **house rules** so the agent never drifts:
 `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`,
