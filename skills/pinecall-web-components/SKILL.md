@@ -1,0 +1,37 @@
+---
+name: pinecall-web-components
+description: >-
+  @pinecall/web web components — framework-agnostic custom elements. Use when the user is building, configuring, or debugging with @pinecall/sdk. Keywords: web components, custom element, framework-agnostic widget.
+license: MIT
+---
+
+# @pinecall/web (Web Components)
+
+@pinecall/web web components — framework-agnostic custom elements.
+
+This skill bundles the official Pinecall documentation for **@pinecall/web (Web Components)**. The
+table below indexes every page; open the `references/…` file for the full text
+(loaded on demand). Source of truth: <https://docs.pinecall.io>.
+
+| Page | What it covers | Open |
+|------|----------------|------|
+| **Web Components** | Framework-agnostic <pinecall-orb>, <pinecall-modal> and <pinecall-chat> Custom Elements — voice and text in any framework, no React required. | [`references/web/components/overview.md`](references/web/components/overview.md) · [docs](https://docs.pinecall.io/web/components/overview) |
+
+
+## House rules — always apply
+
+- **Example defaults** (use these exact strings unless the user asks otherwise):
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`.
+  **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
+  only for languages Flux doesn't support (e.g. Arabic).
+- **Turn detection & VAD are auto-derived from the STT provider — never set
+  `turnDetection` or `vad` manually.** Flux → native turns + native VAD;
+  every other STT → `smart_turn` + `silero`.
+- **Greeting**: inbound → `greeting` field in `pc.agent()`; outbound → `greeting`
+  field in `agent.dial()`. It is sugar for `call.say()` in `call.started`.
+- **Auth**: `new Pinecall()` reads `PINECALL_API_KEY` from env and auto-connects.
+- Full documentation: <https://docs.pinecall.io>
+
+---
+*Generated from `sdk/docs/` by `@pinecall/skills` — do not edit by hand; edit the
+docs and re-run `node build.mjs`.*

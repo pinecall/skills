@@ -1,0 +1,324 @@
+---
+title: "Call"
+description: "Per-session handle. Speak, control, update, read state."
+---
+
+# Call
+
+A live call session. Created automatically and passed to your `call.started` handler. Use it to speak, control the call, update it mid-flight, and read its state.
+
+```typescript
+agent.on("call.started", (call) => {
+  // call is a Call instance
+});
+```
+
+## Properties
+
+```typescript
+call.id              // "CA7ec979f5..." — unique call ID
+call.from            // "+13186330963" or "sip:..."
+call.to              // destination number / URI
+call.direction       // "inbound" | "outbound"
+call.transport       // "phone" | "webrtc" | "chat" | "whatsapp" | "unknown"
+call.metadata        // custom metadata from the channel or dial()
+call.transcript      // [{ role: "user", content: "..." }, ...] — user + assistant only
+call.messages        // full LLM history (populated on call.ended)
+call.currentBotText  // live preview of what the bot is saying (accumulated bot.word events)
+call.duration        // seconds (populated on call.ended)
+call.startedAt       // epoch seconds
+call.endedAt         // epoch seconds
+call.reason          // "hangup" | "timeout" | ...
+```
+
+### `currentBotText`
+
+A live preview of what the bot is currently saying. Built automatically from `bot.word` events — grows word-by-word as TTS plays, resets on each new `bot.speaking`, clears after `bot.finished` or `bot.interrupted`.
+
+```typescript
+agent.on("bot.word", (event, call) => {
+  updateSubtitle(call.currentBotText); // "¡Hola!" → "¡Hola! Estoy" → "¡Hola! Estoy bien,"
+});
+```
+
+## Speech
+
+### `say(text, opts?)`
+
+Speak text immediately. Standalone — no `in_reply_to` tracking. Use for greetings and proactive announcements.
+
+```typescript
+call.say("Hello! How can I help?");
+```
+
+Pass `{ addToHistory: true }` to inject the text into the server-side LLM conversation history as an assistant message. This way the model knows what was said and won't repeat it.
+
+```typescript
+agent.on("call.started", async (call) => {
+  const customer = await db.findByPhone(call.from);
+  call.say(`Hi ${customer.name}! How can I help?`, { addToHistory: true });
+});
+```
+
+> **Tip:** The `greeting` field in `pc.agent()` is syntactic sugar for `call.say(text, { addToHistory })` inside a `call.started` handler. Use `greeting` for convenience, or `call.say()` directly for full control.
+
+### `reply(text)`
+
+Reply to the latest user message. Auto-tracks `in_reply_to`. Use when responding to what the user just said.
+
+```typescript
+call.reply("Sure, let me look that up for you.");
+```
+
+### `replyStream(turn?)`
+
+Open a token-by-token stream for LLM responses. TTS starts as soon as a sentence boundary is detected.
+
+```typescript
+const stream = call.replyStream(turn);
+
+for await (const token of llm.stream(prompt)) {
+  if (stream.aborted) break; // user interrupted
+  stream.write(token);
+}
+stream.end();
+```
+
+See [`ReplyStream`](/api/reply-stream) for details.
+
+### `toolResult(msgId, results)`
+
+Send tool results back to the server-side LLM. When using `tool()`, the SDK calls this automatically — you don't need to call it yourself.
+
+```typescript
+// Auto-called by tool() — you rarely need this directly.
+// Only use for advanced cases where you bypass tool() auto-execution.
+call.toolResult(msgId, [
+  { toolCallId: "tc_abc", result: { status: "shipped" } },
+]);
+```
+
+### `cancel(msgId?)`
+
+Cancel a specific bot message (by ID) or the current one (if no ID).
+
+```typescript
+call.cancel();             // cancel current
+call.cancel("msg_abc123"); // cancel specific
+```
+
+### `clear()`
+
+Flush all queued TTS audio. Stops the bot mid-speech.
+
+```typescript
+call.clear();
+```
+
+## Call control
+
+### `hangup()`
+
+End the call.
+
+```typescript
+call.hangup();
+```
+
+### `forward(to, opts?)`
+
+Transfer the call to another number.
+
+```typescript
+call.forward("+15558675309");
+```
+
+### `sendDTMF(digits)`
+
+Send DTMF tones. Use `0-9`, `*`, `#`.
+
+```typescript
+call.sendDTMF("1234#");
+```
+
+### `hold()` / `unhold()`
+
+Put the call on hold (plays hold music, mutes mic) and resume.
+
+```typescript
+call.hold();
+// ...later
+call.unhold();
+```
+
+### `mute()` / `unmute()`
+
+Mute and unmute the mic. Transcripts are buffered while muted; on `unmute()`, `call.unmuted` fires with the buffered transcript.
+
+```typescript
+call.mute();
+call.unmute();
+```
+
+### `streamSSE(res, opts?)`
+
+Stream call events as Server-Sent Events to an HTTP response. Used for "Call Me" flows where the browser needs a live transcript of an outbound call.
+
+```typescript
+app.post("/api/call-me", async (req, res) => {
+  const call = await agent.dial({
+    to: req.body.phone,
+    greeting: "Hi! You asked me to call you.",
+  });
+  call.streamSSE(res);
+});
+```
+
+Sets SSE headers automatically. Streams: `call.started`, `bot.word`, `bot.confirmed`, `user.speaking`, `user.message`, `tool.call`, `call.ended`. Sends `:ping` keepalives every 25s. Cleans up listeners on client disconnect.
+
+| Option | Type | Description |
+|---|---|---|
+| `greeting` | `string` | Override the greeting text sent as first `bot.confirmed`. Defaults to `call.greeting` (set by `dial()`). |
+
+See [Voice Widget → Call Me](/web/widget/props#callmeendpoint--outbound-calls) for the full pattern.
+
+## Mid-call configuration
+
+### `update(opts)`
+
+Change voice, STT, or language. Takes effect on the next LLM turn or TTS output.
+
+```typescript
+call.update({ voice: "elevenlabs/valentina", language: "es" });
+```
+
+### `setPrompt(text)`
+
+Replace the system prompt for this call only. The agent's default prompt is unchanged.
+
+```typescript
+call.setPrompt("You are now in escalation mode. Be more formal.");
+```
+
+### `setPromptVars(vars)`
+
+Set `{{variable}}` values in the prompt template.
+
+```typescript
+await call.setPromptVars({
+  customer_name: "Maria",
+  tier: "premium",
+});
+```
+
+### `addContext(text)`
+
+Append context after the system prompt. Useful for injecting CRM data, tool results, or live state.
+
+```typescript
+await call.addContext(`Recent orders:\n- ORD-001: shipped\n- ORD-002: pending`);
+```
+
+You can call `addContext` multiple times during a call — each call appends.
+
+### `setPromptFile(path)`
+
+Load a prompt from a file and set it. Equivalent to `readFile + setPrompt`.
+
+```typescript
+await call.setPromptFile("./prompts/escalation.md");
+```
+
+## Conversation history
+
+### `getHistory()`
+
+Fetch the current conversation messages in OpenAI format.
+
+```typescript
+const messages = await call.getHistory();
+// [{ role: "system", content: "..." }, { role: "user", content: "..." }, ...]
+```
+
+### `addHistory(msgs)`
+
+Inject messages into the history. Useful for CRM context or seeding past conversation.
+
+```typescript
+await call.addHistory([
+  { role: "user", content: "I called yesterday about my order" },
+  { role: "assistant", content: "Yes, I see it shipped this morning." },
+]);
+```
+
+### `setHistory(msgs)`
+
+Replace the entire conversation history.
+
+```typescript
+await call.setHistory([
+  { role: "system", content: "You are now in escalation mode." },
+]);
+```
+
+### `clearHistory()`
+
+Clear all messages. The system prompt is preserved.
+
+```typescript
+call.clearHistory();
+```
+
+## Common patterns
+
+### Greet on `call.started`
+
+```typescript
+agent.on("call.started", (call) => {
+  if (call.direction === "inbound") {
+    call.say("Hello! How can I help?");
+  }
+});
+```
+
+### Persist transcripts on `call.ended`
+
+```typescript
+agent.on("call.ended", async (call, reason) => {
+  await db.calls.create({
+    id: call.id,
+    from: call.from,
+    to: call.to,
+    direction: call.direction,
+    transport: call.transport,
+    duration: call.duration,
+    reason,
+    transcript: call.transcript,
+    messages: call.messages,
+  });
+});
+```
+
+### Transfer when escalation requested
+
+```typescript
+import { tool } from "@pinecall/sdk";
+import { z } from "zod";
+
+const transferToHuman = tool({
+  name: "transferToHuman",
+  description: "Escalate to a human agent.",
+  schema: z.object({}),
+  execute: async (_, call) => {
+    call.say("Connecting you now.");
+    call.forward("+15558675309");
+    return { transferred: true };
+  },
+});
+```
+
+## What's next
+
+- [`ReplyStream`](/api/reply-stream) — for client-side LLMs
+- [Events reference](/reference/events) — all events the call emits
+- [Hot-reload](/concepts/hot-reload) — `update`, `setPrompt`, `addContext` patterns

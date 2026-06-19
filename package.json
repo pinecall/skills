@@ -1,0 +1,29 @@
+{
+  "name": "@pinecall/skills",
+  "version": "0.1.0",
+  "description": "Agent Skills for the Pinecall SDK — installable into Claude Code, Antigravity, Cursor, Copilot and any agent that supports the open Skills format.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://docs.pinecall.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pinecall/skills"
+  },
+  "keywords": [
+    "pinecall",
+    "agent-skills",
+    "skills",
+    "claude-code",
+    "antigravity",
+    "voice-ai",
+    "sdk"
+  ],
+  "files": [
+    "skills",
+    "build.mjs",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}
