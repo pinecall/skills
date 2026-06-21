@@ -20,6 +20,7 @@ table below indexes every page; open the `references/…` file for the full text
 | **STT Providers** | Speech-to-text providers, models, and tuning parameters. | [`references/reference/stt-providers.md`](references/reference/stt-providers.md) · [docs](https://docs.pinecall.io/reference/stt-providers) |
 | **TTS Providers** | Text-to-speech providers, voices, and tuning parameters. | [`references/reference/tts-providers.md`](references/reference/tts-providers.md) · [docs](https://docs.pinecall.io/reference/tts-providers) |
 | **LLM Providers** | Server-side LLM providers and configuration. | [`references/reference/llm-providers.md`](references/reference/llm-providers.md) · [docs](https://docs.pinecall.io/reference/llm-providers) |
+| **Managed vs Bring-Your-Own-Key** | Which STT/TTS/LLM models Pinecall serves with its own keys, and which require yours. | [`references/reference/managed-vs-byok.md`](references/reference/managed-vs-byok.md) · [docs](https://docs.pinecall.io/reference/managed-vs-byok) |
 | **Session Limits** | Safety limits to prevent runaway sessions. | [`references/reference/session-limits.md`](references/reference/session-limits.md) · [docs](https://docs.pinecall.io/reference/session-limits) |
 | **REST API** | Static helpers for the Pinecall management API. No WebSocket needed. | [`references/reference/rest-api.md`](references/reference/rest-api.md) · [docs](https://docs.pinecall.io/reference/rest-api) |
 
