@@ -1,6 +1,6 @@
 {
   "name": "@pinecall/skills",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Agent Skills for the Pinecall SDK — installable into Claude Code, Antigravity, Cursor, Copilot and any agent that supports the open Skills format.",
   "type": "module",
   "license": "MIT",
