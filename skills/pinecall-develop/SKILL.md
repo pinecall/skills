@@ -17,7 +17,6 @@ table below indexes every page; open the `references/…` file for the full text
 |------|----------------|------|
 | **Testing Agents** | Automated QA for voice agents using YAML specs and LLM judges. | [`references/guides/testing-agents.md`](references/guides/testing-agents.md) · [docs](https://docs.pinecall.io/guides/testing-agents) |
 | **The MCP Server** | Pinecall as an MCP server — build, run and debug voice agents from Claude Code, Cursor, or any MCP client. | [`references/guides/mcp.md`](references/guides/mcp.md) · [docs](https://docs.pinecall.io/guides/mcp) |
-| **Agent Skills (@pinecall/skills)** | Drop the Pinecall docs into Claude Code, Cursor, Antigravity, Copilot or any agent that speaks the open Agent Skills format — so your coding agent builds voice & chat agents the right way, offline, with the correct defaults. | [`references/skills.md`](references/skills.md) · [docs](https://docs.pinecall.io/skills) |
 | **Security** | Token security model and best practices for production deployments. | [`references/security.md`](references/security.md) · [docs](https://docs.pinecall.io/security) |
 
 

@@ -7,16 +7,21 @@ description: "How Pinecall detects when the user finishes speaking and manages c
 
 Turn detection is the core of a natural voice conversation — knowing **when the user has finished speaking** so the agent can respond, without cutting them off or waiting too long.
 
-Pinecall supports two turn detection strategies, automatically selected based on your STT provider:
+Pinecall supports two kinds of turn detection — the **STT's own endpointing**, or the
+local **SmartTurn model** — and the server picks per STT provider:
 
-| STT Provider | Turn Detection | VAD | How it works |
+| STT provider | Turn detection | VAD | How it works |
 |---|---|---|---|
-| `deepgram/flux` | **Native** | **Native** | Flux has built-in turn detection — it analyzes the audio stream and emits `EagerEndOfTurn` / `EndOfTurn` signals directly. Zero extra latency. |
-| `deepgram/nova-3` | **Smart Turn** | **Silero** | External ML-based turn detection. Silero VAD detects speech start/stop, then SmartTurn analyzes context to decide if the user is done. |
-| `gladia/solaria` | **Smart Turn** | **Silero** | Same as Nova-3 — Silero VAD + SmartTurn. |
-| `transcribe` | **Smart Turn** | **Silero** | Same as Nova-3 — Silero VAD + SmartTurn. |
+| `deepgram/flux` *(the default)* | **Native** | **Native** | Flux detects turns inside the STT stream itself and emits `EagerEndOfTurn` / `EndOfTurn` directly. No separate VAD, no extra model, zero added latency. |
+| `soniox/realtime` | **Native** — semantic endpointing | **Silero** (speech start + barge-in only) | Soniox decides the user is done from pauses, intonation *and whether the sentence is complete*, and marks the final transcript; the server commits the turn on that mark. Opt out with `stt: { provider: "soniox", turn: "smart_turn" }`. |
+| **every other STT** | **SmartTurn** | **Silero** | Silero VAD marks where speech starts and stops, then the SmartTurn model reads the audio's intonation to decide whether the user actually finished or is just pausing mid-sentence. |
 
-> **You never configure this manually.** The server auto-derives the turn detection strategy from the STT provider. Just set `stt` and the rest follows.
+"Every other STT" is literal — `deepgram/nova-3`, `cartesia/ink-whisper`,
+`elevenlabs/scribe`, `assemblyai/universal`, `gladia/solaria`, `xai/grok-stt` and
+`transcribe` alike, and any provider added later. A provider only gets the first
+kind when it ships its own endpointing.
+
+> **You never configure this manually.** The server auto-derives the turn detection strategy from the STT provider. Just set `stt` and the rest follows. The one knob is `stt.turn` on Soniox — see [STT providers → Soniox](/reference/stt-providers#who-ends-the-turn-turn).
 
 > **Not to be confused with `detectTurnEnd`.** `detectTurnEnd` is a *separate*, real option on `agent.dial()` and `agent.bridge()` — it does **not** configure the turn-detection strategy. It controls **when your greeting is delivered**: by default (`false`) the greeting is spoken immediately on pickup (good for humans); set it to `true` to wait for the **other side** (a bot/IVR/answering machine that greets first) to finish its own greeting before speaking yours. When `true`, the other party's end-of-turn is also relayed to your code as a `turn.end` event, so code that drives the call manually (e.g. a test/judge agent) knows when to speak. Default `false` for `dial`, `true` for `bridge`. See [Outbound Calls → `detectTurnEnd`](/guides/outbound-calls#detectturnend--wait-for-the-other-sides-greeting-before-speaking).
 
@@ -58,7 +63,7 @@ stt: {
 
 ## How Smart Turn + Silero VAD works
 
-For non-Flux providers (Nova-3, Gladia, Transcribe), the server uses a two-stage pipeline:
+For every provider without its own endpointing (everything but Flux and Soniox), the server uses a two-stage pipeline:
 
 ### Stage 1: Silero VAD (Voice Activity Detection)
 
@@ -211,9 +216,9 @@ bot.finished          → bot done speaking
 speech.started        → user starts again...
 ```
 
-## Multi-language: mixing Flux and Nova-3
+## Multi-language: mixing Flux and non-Flux providers
 
-When you have phone numbers in different languages, some may use Flux (native turn detection) and others Nova-3 (SmartTurn + Silero). Just set the `stt` provider — **the server auto-configures everything else**:
+When you have phone numbers in different languages, some land on Flux (native turn detection) and others on a non-Flux STT (SmartTurn + Silero) — Arabic, for instance, defaults to ElevenLabs Scribe because Flux does not cover it. Just set the `stt` provider — **the server auto-configures everything else**:
 
 ```typescript
 const agent = pc.agent("global-support", {
@@ -224,15 +229,15 @@ const agent = pc.agent("global-support", {
     { number: "+14155551234", language: "en", voice: "elevenlabs/sarah", stt: "deepgram/flux" },
     // Spanish — Flux multilingual (native turn detection)
     { number: "+34612345678", language: "es", voice: "elevenlabs/valentina", stt: "deepgram/flux" },
-    // Arabic — Nova-3 → server auto-activates SmartTurn + Silero
-    { number: "+972501234567", language: "ar", voice: "elevenlabs/ahmad", stt: "deepgram/nova-3" },
+    // Arabic — Scribe (the default for ar) → server auto-activates SmartTurn + Silero
+    { number: "+966501234567", language: "ar", voice: "elevenlabs/ahmad", stt: "elevenlabs/scribe" },
   ],
 });
 ```
 
 The turn detection strategy switches **per call** based on which phone number was called. English and Spanish callers get Flux's native turn detection. Arabic callers get SmartTurn + Silero. **You never configure turn detection or VAD manually** — the server derives them from the STT provider automatically.
 
-> **Why auto-derive?** Turn detection and VAD are tightly coupled to the STT provider. Flux has built-in turn signals that are faster and more accurate than any external system. Nova-3 doesn't, so the server adds SmartTurn + Silero. Exposing this as manual config would create footgun combinations (e.g. Flux with Silero VAD) that degrade quality.
+> **Why auto-derive?** Turn detection and VAD are tightly coupled to the STT provider. Flux has built-in turn signals that are faster and more accurate than any external system. The others don't, so the server adds SmartTurn + Silero. Exposing this as manual config would create footgun combinations (e.g. Flux with Silero VAD) that degrade quality.
 
 ## What's next
 

@@ -15,7 +15,7 @@ table below indexes every page; open the `references/…` file for the full text
 
 | Page | What it covers | Open |
 |------|----------------|------|
-| **Events** | Every event the SDK emits, with payload shapes and timing. | [`references/reference/events.md`](references/reference/events.md) · [docs](https://docs.pinecall.io/reference/events) |
+| **Events Reference** | Every event the SDK emits, with payload shapes and timing. | [`references/reference/events.md`](references/reference/events.md) · [docs](https://docs.pinecall.io/reference/events) |
 | **REST API** | Static helpers for the Pinecall management API. No WebSocket needed. | [`references/reference/rest-api.md`](references/reference/rest-api.md) · [docs](https://docs.pinecall.io/reference/rest-api) |
 | **CLI** | Inspect agents, chat, test with specs, browse voices, and manage billing from the terminal. | [`references/reference/cli.md`](references/reference/cli.md) · [docs](https://docs.pinecall.io/reference/cli) |
 | **Session Limits** | Safety limits to prevent runaway sessions. | [`references/reference/session-limits.md`](references/reference/session-limits.md) · [docs](https://docs.pinecall.io/reference/session-limits) |

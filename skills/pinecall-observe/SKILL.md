@@ -15,7 +15,7 @@ table below indexes every page; open the `references/…` file for the full text
 
 | Page | What it covers | Open |
 |------|----------------|------|
-| **Events Guide** | Complete guide to every event in the Pinecall SDK — lifecycle, speech, turn, bot, tools, session, WhatsApp, and more. | [`references/guides/events.md`](references/guides/events.md) · [docs](https://docs.pinecall.io/guides/events) |
+| **Events** | Complete guide to every event in the Pinecall SDK — lifecycle, speech, turn, bot, tools, session, WhatsApp, and more. | [`references/guides/events.md`](references/guides/events.md) · [docs](https://docs.pinecall.io/guides/events) |
 | **The Call Log** | Every call is an append-only log with a cursor — live tail, late join, reconnect, replay and history are the same mechanism. | [`references/guides/call-log.md`](references/guides/call-log.md) · [docs](https://docs.pinecall.io/guides/call-log) |
 | **Live Listening** | Listen to active calls in real-time from a browser or custom client. | [`references/guides/live-listening.md`](references/guides/live-listening.md) · [docs](https://docs.pinecall.io/guides/live-listening) |
 | **Human Takeover** | Pause the AI agent so a human can intervene in real-time conversations. | [`references/guides/human-takeover.md`](references/guides/human-takeover.md) · [docs](https://docs.pinecall.io/guides/human-takeover) |

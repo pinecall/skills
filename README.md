@@ -42,7 +42,7 @@ cp -R skills/pinecall-phone ~/your-project/.claude/skills/
 | `pinecall-browser-channel` | WebRTC in the browser |
 | `pinecall-observe` | Events, call log, live listening, human takeover, live call apps, multi-tenant |
 | `pinecall-streaming` | SSE / WebSocket event streaming to your backend |
-| `pinecall-develop` | Testing agents, MCP server, Agent Skills, security |
+| `pinecall-develop` | Testing agents, MCP server, security |
 | `pinecall-sdk-api` | `@pinecall/sdk` API (Pinecall / Agent / Call / ReplyStream) |
 | `pinecall-web-voice` | `@pinecall/web/core` — browser WebRTC voice |
 | `pinecall-web-widget` | `@pinecall/web` React widget |
