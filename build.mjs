@@ -24,7 +24,7 @@ const OUT_DIR = join(HERE, "skills");
 const HOUSE_RULES = `## House rules — always apply
 
 - **Example defaults** (use these exact strings unless the user asks otherwise):
-  \`stt: "deepgram/flux"\`, \`llm: "openai/gpt-5-chat-latest"\`, \`voice: "elevenlabs/sarah"\`.
+  \`stt: "deepgram/flux"\`, \`llm: "openai/gpt-5.4-nano"\`, \`voice: "elevenlabs/sarah"\`.
   **NEVER use \`deepgram/nova-2\`** — it is not supported. Use \`deepgram/nova-3\`
   only for languages Flux doesn't support (e.g. Arabic).
 - **Turn detection & VAD are auto-derived from the STT provider — never set
@@ -49,7 +49,7 @@ const pc = new Pinecall(); // reads PINECALL_API_KEY, auto-connects
 
 const agent = pc.agent("mara", {
   prompt: "You are Mara, a friendly voice assistant. Be concise.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   language: "en",
@@ -69,47 +69,87 @@ const GROUP_MAP = {
     blurb: "The mental model — Pinecall, Agent, Channel, Call; server- vs client-side LLM; hot reload; deployment topologies.",
     keywords: "agents and channels, server vs client llm, hot reload, deployment, mental model, architecture",
   },
-  Guides: {
-    slug: "pinecall-guides",
-    blurb: "Task guides for building Pinecall agent features.",
-    keywords: "inbound, outbound, whatsapp, tools, function calling, events, live listening, conversation history, human takeover, webrtc, multi-tenant, dev mode, testing, agent.dial, call.say, tool()",
+  "Build the Agent": {
+    slug: "pinecall-build-agent",
+    blurb: "What the agent knows and can do — tools, memory, conversation history, knowledge bases (RAG), website tap, skills, realtime speech, token metadata.",
+    keywords: "tools, function calling, tool(), memory, conversation history, knowledge base, rag, tap, skills, realtime speech, token metadata",
   },
-  Examples: {
-    slug: "pinecall-examples",
-    blurb: "Copy-paste recipes — full working agents for common scenarios.",
-    keywords: "example, recipe, sample, outbound dispatch, chat bot, browser widget, multi-channel, headless",
+  Phone: {
+    slug: "pinecall-phone",
+    blurb: "Phone channel — inbound voice, outbound calls (agent.dial), ringing and reject.",
+    keywords: "inbound, outbound, agent.dial, twilio, phone number, ringing, reject, call.say",
+  },
+  Messaging: {
+    slug: "pinecall-messaging",
+    blurb: "Messaging channel — WhatsApp agents.",
+    keywords: "whatsapp, messaging, text channel",
+  },
+  "Browser & Mobile": {
+    slug: "pinecall-browser-channel",
+    blurb: "Browser and mobile channel — WebRTC voice from the browser, token endpoint.",
+    keywords: "webrtc, browser, token endpoint, mobile channel",
+  },
+  "Observe & Control": {
+    slug: "pinecall-observe",
+    blurb: "What happens during a call — events, call log, live listening, human takeover, live call apps, multi-tenant dashboards.",
+    keywords: "events, call log, live listening, human takeover, live call app, multi-tenant, observe, monitor",
+  },
+  "Streaming to your backend": {
+    slug: "pinecall-streaming",
+    blurb: "Stream call events to your backend over SSE or WebSocket.",
+    keywords: "sse, server-sent events, websocket, event streaming, backend",
+  },
+  "Develop & Ship": {
+    slug: "pinecall-develop",
+    blurb: "Developer workflow — testing agents, the MCP server, Agent Skills for your IDE, security.",
+    keywords: "testing, test agents, mcp server, agent skills, security, develop, ship",
   },
   "@pinecall/sdk (Node.js)": {
     slug: "pinecall-sdk-api",
     blurb: "@pinecall/sdk API reference — Pinecall, Agent, Call, ReplyStream.",
     keywords: "api, pc.agent, agent.dial, call object, reply stream, replyStream, server sdk surface",
   },
-  "Voice — core": {
+  "@pinecall/web — Voice core": {
     slug: "pinecall-web-voice",
     blurb: "@pinecall/web/core — browser WebRTC voice (VoiceSession, state & phases, DataChannel protocol).",
     keywords: "webrtc, voice session, browser voice, datachannel, @pinecall/web/core",
   },
-  "React widget": {
+  "@pinecall/web — React widget": {
     slug: "pinecall-web-widget",
     blurb: "@pinecall/web React widget — VoiceWidget props, theming, useVoiceSession hook, client tools.",
     keywords: "react widget, voicewidget, useVoiceSession, theming, props, client tools, @pinecall/web",
   },
-  "Text chat": {
+  "@pinecall/web — Text chat": {
     slug: "pinecall-web-chat",
     blurb: "@pinecall/web/chat — browser text chat (ChatSession, ChatView).",
     keywords: "chat, chatsession, text chat, @pinecall/web/chat",
   },
-  "Web components": {
+  "@pinecall/web — Web components": {
     slug: "pinecall-web-components",
     blurb: "@pinecall/web web components — framework-agnostic custom elements.",
     keywords: "web components, custom element, framework-agnostic widget",
+  },
+  Providers: {
+    slug: "pinecall-providers",
+    blurb: "STT, TTS and LLM provider tables — models, params, defaults.",
+    keywords: "stt providers, tts providers, llm providers, soniox, elevenlabs, deepgram, openrouter, models, voices",
+  },
+  "@pinecall/ionic": {
+    slug: "pinecall-ionic",
+    blurb: "@pinecall/ionic — native voice calls in Ionic/Capacitor apps, CallKit, background and killed-app calls (PushKit).",
+    keywords: "ionic, capacitor, callkit, pushkit, background calls, mobile, native call",
+  },
+  "@pinecall/react-native": {
+    slug: "pinecall-react-native",
+    blurb: "@pinecall/react-native — voice calls in React Native apps.",
+    keywords: "react native, expo, mobile, voice call",
   },
   "Agent Skills": {
     slug: "pinecall-agent-skills",
     blurb: "@pinecall/skills — install the Pinecall docs as Agent Skills into Claude Code, Cursor, Antigravity, Copilot.",
     keywords: "agent skills, @pinecall/skills, claude code, cursor, antigravity, copilot, skills add, install skills",
   },
-  Reference: {
+  "API Reference": {
     slug: "pinecall-reference",
     blurb: "Reference tables — CLI commands, STT/TTS/LLM providers, events, session limits, REST API.",
     keywords: "cli, commands, stt providers, tts providers, llm providers, events, session limits, rest api, reference",

@@ -29,7 +29,7 @@ const pc = new Pinecall(); // reads PINECALL_API_KEY, auto-connects
 
 const agent = pc.agent("mara", {
   prompt: "You are Mara, a friendly voice assistant. Be concise.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   language: "en",
@@ -40,7 +40,7 @@ const agent = pc.agent("mara", {
 ## House rules — always apply
 
 - **Example defaults** (use these exact strings unless the user asks otherwise):
-  `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`.
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5.4-nano"`, `voice: "elevenlabs/sarah"`.
   **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
   only for languages Flux doesn't support (e.g. Arabic).
 - **Turn detection & VAD are auto-derived from the STT provider — never set

@@ -13,6 +13,10 @@ When you build a Pinecall agent, you choose where the LLM runs. This is the sing
 
 The Pinecall server runs the LLM. You give it a prompt, a model, and (optionally) tool definitions. The server handles STT, runs the LLM, generates TTS — you only handle tool calls.
 
+> **Realtime speech-to-speech:** set `llm: "pinecall/gpt-realtime"` and the server
+> collapses STT + LLM + TTS into **one** OpenAI Realtime model — lower latency and
+> native barge-in, same tools and events. See [Realtime speech-to-speech](/guides/realtime-speech).
+
 ```typescript
 import { tool } from "@pinecall/sdk";
 import { z } from "zod";
@@ -26,7 +30,7 @@ const lookupCustomer = tool({
 
 const agent = pc.agent("receptionist", {
   prompt: "You are a helpful receptionist. Be concise.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   language: "en",
@@ -48,7 +52,7 @@ const agent = pc.agent("my-bot", { voice: "cartesia/yumiko", language: "en" });
 agent.on("turn.end", async (turn, call) => {
   const stream = call.replyStream(turn);
   const completion = await openai.chat.completions.create({
-    llm: "openai/gpt-5-chat-latest",
+    llm: "openai/gpt-5.4-nano",
     messages: [
       { role: "system", content: "You are helpful. Be concise." },
       { role: "user", content: turn.text },
@@ -87,7 +91,7 @@ A single `Pinecall` instance can host multiple agents, each with a different LLM
 ```typescript
 // Server-side agent for WhatsApp + phone
 const support = pc.agent("support", {
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   stt: "deepgram/flux",
   prompt: "...",
   phoneNumber: "+13186330963",

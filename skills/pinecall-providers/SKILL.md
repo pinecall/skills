@@ -1,0 +1,45 @@
+---
+name: pinecall-providers
+description: >-
+  STT, TTS and LLM provider tables — models, params, defaults. Use when the user is building, configuring, or debugging with @pinecall/sdk. Keywords: stt providers, tts providers, llm providers, soniox, elevenlabs, deepgram, openrouter, models, voices.
+license: MIT
+---
+
+# Providers
+
+STT, TTS and LLM provider tables — models, params, defaults.
+
+This skill bundles the official Pinecall documentation for **Providers**. The
+table below indexes every page; open the `references/…` file for the full text
+(loaded on demand). Source of truth: <https://docs.pinecall.io>.
+
+| Page | What it covers | Open |
+|------|----------------|------|
+| **STT Providers** | Speech-to-text providers, models, and tuning parameters. | [`references/reference/stt-providers.md`](references/reference/stt-providers.md) · [docs](https://docs.pinecall.io/reference/stt-providers) |
+| **TTS Providers** | Text-to-speech providers, voices, and tuning parameters. | [`references/reference/tts-providers.md`](references/reference/tts-providers.md) · [docs](https://docs.pinecall.io/reference/tts-providers) |
+| **LLM Providers** | Server-side LLM providers and configuration. | [`references/reference/llm-providers.md`](references/reference/llm-providers.md) · [docs](https://docs.pinecall.io/reference/llm-providers) |
+
+
+## House rules — always apply
+
+- **Example defaults** (use these exact strings unless the user asks otherwise):
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5.4-nano"`, `voice: "elevenlabs/sarah"`.
+  **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
+  only for languages Flux doesn't support (e.g. Arabic).
+- **Turn detection & VAD are auto-derived from the STT provider — never set
+  `turnDetection` or `vad` manually.** Flux → native turns + native VAD;
+  every other STT → `smart_turn` + `silero`.
+- **TTS model is auto-derived from `language`** — non-English agents (e.g.
+  `language: "es"`) default ElevenLabs to `eleven_multilingual_v2` so numbers,
+  dates and currency are pronounced correctly (flash/turbo don't normalize text).
+  English stays on `eleven_flash_v2_5`. To keep flash on a non-English agent
+  (lower latency/cost), set the top-level `flash: true` flag. To pin any model,
+  use `voice: { ..., model: "..." }` (explicit model always wins over `flash`).
+- **Greeting**: inbound → `greeting` field in `pc.agent()`; outbound → `greeting`
+  field in `agent.dial()`. It is sugar for `call.say()` in `call.started`.
+- **Auth**: `new Pinecall()` reads `PINECALL_API_KEY` from env and auto-connects.
+- Full documentation: <https://docs.pinecall.io>
+
+---
+*Generated from `sdk/docs/` by `@pinecall/skills` — do not edit by hand; edit the
+docs and re-run `node build.mjs`.*

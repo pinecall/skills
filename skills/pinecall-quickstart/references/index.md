@@ -21,7 +21,7 @@ const pc = new Pinecall();
 
 const agent = pc.agent("mara", {
   prompt: "You are Mara, a friendly booking assistant.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   phoneNumber: "+13186330963",
@@ -46,6 +46,7 @@ That snippet is a production-ready agent. The SDK auto-connects on construction,
 - **Multi-channel agents** — the same agent handling phone, WhatsApp, and browser calls simultaneously
 - **Outbound campaigns** — programmatic outbound calls with TTS greetings
 - **Embedded copilots** — voice inside your web app via the React widget
+- **Native mobile calls** — a real CallKit phone call to your agent from an Ionic/Capacitor or React Native app ([mobile](/mobile/ionic-overview))
 
 ## How the SDK is organized
 
@@ -93,7 +94,7 @@ Use `phoneNumbers` (plural) to attach several numbers with per-number overrides 
 ```typescript
 const agent = pc.agent("mara", {
   prompt: "You are Mara, a friendly assistant.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   phoneNumbers: [
     { number: "+14155551234", language: "en", stt: "deepgram/flux", voice: "elevenlabs/sarah" },
     { number: "+966501234567", language: "ar", stt: "deepgram/nova-3", voice: "elevenlabs/ahmad" },
@@ -113,6 +114,9 @@ Each number can override `language`, `stt`, `voice`, and `ringing`. The agent pr
 | Build a phone agent | [Guides → Inbound Voice](/guides/inbound-voice) |
 | Build a WhatsApp bot | [Guides → WhatsApp](/guides/whatsapp) |
 | Embed voice in your web app | [Guides → WebRTC in the browser](/guides/webrtc-browser) |
+| Watch calls live in a dashboard | [Guides → The Call Log](/guides/call-log) |
+| Build a full app, step by step | [Guides → Build a live call app](/guides/build-a-live-call-app) |
+| Use realtime speech-to-speech | [Guides → Realtime speech](/guides/realtime-speech) |
 | Look up a method | [API Reference](/api/pinecall) |
 | Tune STT, TTS, or the LLM | [Reference → Providers](/reference/stt-providers) |
 

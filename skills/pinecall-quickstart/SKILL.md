@@ -17,6 +17,9 @@ table below indexes every page; open the `references/…` file for the full text
 |------|----------------|------|
 | **Pinecall SDK** | Build real-time voice & messaging AI agents in TypeScript. | [`references/index.md`](references/index.md) · [docs](https://docs.pinecall.io/index) |
 | **Quickstart** | From zero to a working voice agent in under 5 minutes. | [`references/quickstart.md`](references/quickstart.md) · [docs](https://docs.pinecall.io/quickstart) |
+| **Project Structure** | The recommended layout for a Pinecall app — one process per agent, token endpoints beside the agent, shared domain in packages/. | [`references/guides/project-structure.md`](references/guides/project-structure.md) · [docs](https://docs.pinecall.io/guides/project-structure) |
+| **Dev Mode** | Run dev and production agents on the same phone number, with zero extra Twilio cost. | [`references/guides/dev-mode.md`](references/guides/dev-mode.md) · [docs](https://docs.pinecall.io/guides/dev-mode) |
+| **Deployment Topologies** | Embedded, standalone, or headless — pick the topology that fits your architecture. | [`references/concepts/deployment-topologies.md`](references/concepts/deployment-topologies.md) · [docs](https://docs.pinecall.io/concepts/deployment-topologies) |
 
 ## Canonical agent
 
@@ -27,7 +30,7 @@ const pc = new Pinecall(); // reads PINECALL_API_KEY, auto-connects
 
 const agent = pc.agent("mara", {
   prompt: "You are Mara, a friendly voice assistant. Be concise.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   language: "en",
@@ -38,7 +41,7 @@ const agent = pc.agent("mara", {
 ## House rules — always apply
 
 - **Example defaults** (use these exact strings unless the user asks otherwise):
-  `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`.
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5.4-nano"`, `voice: "elevenlabs/sarah"`.
   **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
   only for languages Flux doesn't support (e.g. Arabic).
 - **Turn detection & VAD are auto-derived from the STT provider — never set

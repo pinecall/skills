@@ -34,7 +34,7 @@ const pc = new Pinecall();
 
 export const agent = pc.agent("mara", {
   prompt: "You are Mara, a friendly voice assistant. Be concise.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   language: "en",
@@ -51,7 +51,7 @@ pinecall run agent/index.js
 You should see:
 
 ```
-  ⚡ booting mara  ·  gpt-5-chat-latest · elevenlabs/sarah
+  ⚡ booting mara  ·  gpt-5.4-nano · elevenlabs/sarah
   ☎ listening (no phone — webrtc/chat only)
 ```
 
@@ -135,7 +135,7 @@ Use `phoneNumbers` (plural) to attach multiple numbers with per-number overrides
 ```typescript
 const mara = pc.agent("mara", {
   prompt: "You are Mara, a friendly voice assistant.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   phoneNumbers: [
     // US number: English, fast native turns
     { number: "+14155551234", language: "en", stt: "deepgram/flux", voice: "elevenlabs/sarah" },
@@ -166,7 +166,7 @@ const lookupOrder = tool({
 
 const mara = pc.agent("mara", {
   prompt: "You are Mara. Look up orders when asked.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   voice: "elevenlabs/sarah",
   stt: "deepgram/flux",
   language: "en",
@@ -179,7 +179,9 @@ No webhook URL to expose. No manual event handler. Just a function that runs in 
 
 ## Where to go next
 
+- **Build a full app, step by step** → [Guides → Build a live call app](/guides/build-a-live-call-app)
 - **Build a real phone agent** → [Guides → Inbound Voice](/guides/inbound-voice)
 - **Build a WhatsApp bot** → [Guides → WhatsApp](/guides/whatsapp)
 - **Understand the architecture** → [Concepts → Agents and Channels](/concepts/agents-and-channels)
+- **Call your agent from a mobile app** → [@pinecall/ionic (Mobile)](/mobile/ionic-overview)
 - **Look up every method** → [API Reference](/api/pinecall)

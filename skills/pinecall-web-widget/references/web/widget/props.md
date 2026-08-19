@@ -46,7 +46,7 @@ const florencia = pc.agent("florencia", {
   voice: "elevenlabs/sarah",
   language: "es",
   stt: "deepgram/flux-en",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.4-nano",
   prompt: "...",
   greeting: "¡Hola!",
 });
@@ -184,6 +184,8 @@ Pass session-level overrides to the agent:
   }}
 />
 ```
+
+Presentation only: the server accepts `voice`, `language`, `stt`, `tts`, `greeting` and `flash` from a browser and **refuses** `prompt`, `llm`, `tools`, `knowledge_base`, `skills` and `raw_prompt` — those decide what the agent *is* and belong to the process that registered it. See [What `config` may set](/web/core/voice-session#what-config-may-set).
 
 ## `metadata` — server-side context
 

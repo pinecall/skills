@@ -104,12 +104,29 @@ SmartTurn uses a small ML model to understand conversational patterns. For examp
 - "Yeah" → `turn.end` (acknowledgment)
 - "So I was thinking about maybe" → `turn.pause` (trailing off)
 
-SmartTurn parameters:
+SmartTurn runs **once** per silence, ~280ms after the user goes quiet, and its
+verdict stands: on `turn.end` the reply starts immediately; on `turn.pause` the
+server keeps listening until either the user resumes speaking or
+`max_silence_seconds` elapses, which forces `turn.end`. A stray breath, click or
+chair creak after the user has stopped does **not** restart that silence clock —
+only `resume_min_ms` of continuous voice that also clears the loudness gate counts
+as "the user resumed". (This mirrors pipecat's VAD `start_secs` / SmartTurn
+`stop_secs` behaviour.)
+
+SmartTurn parameters (`turn_detection`):
 
 | Parameter | Default | What it does |
 |---|---|---|
-| `smart_turn_threshold` | `0.7` | Higher = more patient (needs higher confidence to end) |
-| `max_silence_seconds` | `2.0` | Force turn.end after this much silence regardless |
+| `smart_turn_threshold` | `0.5` | Probability above which the model's verdict is `turn.end`. `0.5` is the model's native boundary; higher = more patient but flat-intonation sentences ("…at 10 p.m.") sit in `turn.pause` longer |
+| `max_silence_seconds` | `3.0` | Force `turn.end` after this much silence regardless of the model |
+| `smart_turn_recheck_ms` | `0` | `>0` = run the model one extra time this many ms into the silence (off by default) |
+
+Resume hysteresis (`vad`):
+
+| Parameter | Default | What it does |
+|---|---|---|
+| `resume_min_ms` | `200` | Continuous voice needed, after `speech_end_delay_ms` of silence, before it counts as the user speaking again |
+| `resume_min_volume` | *(same as `interruption.min_volume`, 0.35)* | Smoothed-loudness gate that voice must also clear to count as a resume |
 
 ## The turn state machine
 
@@ -123,31 +140,48 @@ When the user speaks while the bot is talking, the turn controller handles **bar
 
 ![Barge-in decision tree](/assets/diagrams/bargein-decision.png)
 
+Two independent detection paths can interrupt the bot, each with its own noise gate:
+
+1. **Voice path** (~300ms): continuous voice must clear a higher VAD confidence bar
+   **and** a minimum smoothed loudness for `min_duration_ms`. Filters TV/background
+   noise, echo of the bot's own voice, coughs and door slams.
+2. **Transcript path** (near-instant): as soon as the STT decodes words, the bot is
+   interrupted — but only if the transcript has at least `min_words` words and is not
+   a pure backchannel (*"sí"*, *"ok"*, *"ajá"*, *"uh-huh"* — acknowledgements mean
+   "I'm listening", not "stop talking").
+
 **Barge-in parameters** (configurable via `interruption`):
 
 ```typescript
 const agent = pc.agent("support", {
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.3-chat-latest",
   stt: "deepgram/flux",
   // Barge-in config (optional — defaults are good for most cases)
   interruption: {
-    energy_threshold_db: -40, // dB threshold (higher = stricter)
-    min_duration_ms: 300,     // min speech duration before interrupting
+    min_duration_ms: 300,      // voice path: min continuous speech before interrupting
+    confidence: 0.7,           // voice path: VAD confidence bar during bot speech
+    min_volume: 0.35,          // voice path: smoothed loudness floor, 0–1 (0 disables)
+    min_words: 2,              // transcript path: words needed to interrupt
+    backchannel_filter: true,  // transcript path: "sí"/"ok"/"ajá" never interrupt
   },
 });
 ```
 
-| Config | Default | Behavior |
-|---|---|---|
-| `-50 dB, 200ms` | — | Very sensitive — reacts to soft speech quickly |
-| `-40 dB, 300ms` | ✅ Default | Balanced — filters noise, responds to clear speech |
-| `-35 dB, 400ms` | — | Strict — requires louder, longer speech to interrupt |
-| `false` | — | Disabled — bot never gets interrupted |
+| Config | Behavior |
+|---|---|
+| `min_duration_ms: 200, min_volume: 0.25, min_words: 1` | Very sensitive — reacts to soft, brief speech |
+| Defaults (`300ms, 0.7, 0.35, 2 words, filter on`) ✅ | Balanced — filters noise and backchannels, responds to clear speech |
+| `min_duration_ms: 400, min_volume: 0.45, min_words: 3` | Strict — requires louder, longer, wordier speech to interrupt |
+| `false` | Disabled — bot never gets interrupted |
 
 ```typescript
 // Disable barge-in entirely
 interruption: false
 ```
+
+> **Note:** saying *"sí sí"* or *"ok"* while the bot talks won't cut it off — pure
+> acknowledgements are filtered on the transcript path. Sustained real speech always
+> interrupts through the voice path even if it fails the word gate.
 
 ## SDK events
 
@@ -184,7 +218,7 @@ When you have phone numbers in different languages, some may use Flux (native tu
 ```typescript
 const agent = pc.agent("global-support", {
   prompt: "You are a multilingual support agent.",
-  llm: "openai/gpt-5-chat-latest",
+  llm: "openai/gpt-5.3-chat-latest",
   phoneNumbers: [
     // English — Flux (native turn detection, lowest latency)
     { number: "+14155551234", language: "en", voice: "elevenlabs/sarah", stt: "deepgram/flux" },
@@ -202,7 +236,6 @@ The turn detection strategy switches **per call** based on which phone number wa
 
 ## What's next
 
-- [Example: Turn Detection](/examples/turn-detection) — runnable debug tool showing every event
 - [STT Providers](/reference/stt-providers) — full provider reference with tuning parameters
 - [Hot-reload](/concepts/hot-reload) — swap STT provider mid-call
 - [Events reference](/reference/events) — all turn-related events

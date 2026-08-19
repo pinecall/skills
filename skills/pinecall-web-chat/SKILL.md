@@ -5,11 +5,11 @@ description: >-
 license: MIT
 ---
 
-# Text chat
+# @pinecall/web — Text chat
 
 @pinecall/web/chat — browser text chat (ChatSession, ChatView).
 
-This skill bundles the official Pinecall documentation for **Text chat**. The
+This skill bundles the official Pinecall documentation for **@pinecall/web — Text chat**. The
 table below indexes every page; open the `references/…` file for the full text
 (loaded on demand). Source of truth: <https://docs.pinecall.io>.
 
@@ -22,7 +22,7 @@ table below indexes every page; open the `references/…` file for the full text
 ## House rules — always apply
 
 - **Example defaults** (use these exact strings unless the user asks otherwise):
-  `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`.
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5.4-nano"`, `voice: "elevenlabs/sarah"`.
   **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
   only for languages Flux doesn't support (e.g. Arabic).
 - **Turn detection & VAD are auto-derived from the STT provider — never set

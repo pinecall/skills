@@ -22,6 +22,7 @@ call.to              // destination number / URI
 call.direction       // "inbound" | "outbound"
 call.transport       // "phone" | "webrtc" | "chat" | "whatsapp" | "unknown"
 call.metadata        // sealed token metadata (createToken), dial() metadata, or channel context
+call.language        // "en" | "es" | … — the session's language, as the server resolved it
 call.transcript      // [{ role: "user", content: "..." }, ...] — user + assistant only
 call.messages        // full LLM history (populated on call.ended)
 call.currentBotText  // live preview of what the bot is saying (accumulated bot.word events)
@@ -46,6 +47,28 @@ agent.on("call.started", (call) => {
 ```
 
 The client-supplied `metadata` prop on the browser widget / `VoiceSession` also lands here, but is set in the browser — don't trust it for authorization; seal that in the token instead.
+
+### `language`
+
+The language this session is running in — the same value the server used to pick the STT and TTS language and to choose the entry of a [per-language greeting](/api/agent#creation). Read it to localise the prompt, so what the model writes and what the caller hears never disagree.
+
+It is resolved per session, in this order:
+
+- **WebRTC** — `config.language` from the browser's offer (a language picker, the visitor's locale), else the agent's `language`.
+- **Phone** — the dialled number's channel config, else the agent's `language`. A number *is* a language: give each line its own.
+- **Chat** — the `lang` sealed into the chat token by your backend, else the agent's `language`.
+
+```typescript
+agent.on("call.preparing", (call) => {
+  call.setPromptVars({
+    lang: call.language === "es" ? SPANISH_BLOCK : ENGLISH_BLOCK,
+  });
+});
+```
+
+BCP-47 base (`"es"`, not `"es-PE"`), and `""` on a server older than this field.
+
+> Prefer this to reading a language out of `metadata`: metadata is whatever your backend chose to seal, while `language` is what the session is actually running as.
 
 ### `currentBotText`
 
@@ -180,6 +203,8 @@ call.unmute();
 
 Stream call events as Server-Sent Events to an HTTP response. Used for "Call Me" flows where the browser needs a live transcript of an outbound call.
 
+> For observing calls in general — including ones this process didn't dial — prefer the [call log](/guides/call-log): it works from any process and survives reconnects with a cursor. `streamSSE` remains handy for the narrow "dial + pipe this one call to this one response" flow.
+
 ```typescript
 app.post("/api/call-me", async (req, res) => {
   const call = await agent.dial({
@@ -218,7 +243,7 @@ call.setPrompt("You are now in escalation mode. Be more formal.");
 
 ### `setPromptVars(vars)`
 
-Set `{{variable}}` values in the prompt template.
+Set `{{variable}}` values in the prompt template, for this call.
 
 ```typescript
 await call.setPromptVars({
@@ -226,6 +251,16 @@ await call.setPromptVars({
   tier: "premium",
 });
 ```
+
+Highest precedence: these beat the agent-level `promptVars` and stay set until
+you overwrite them. Inside a [`call.preparing`](/guides/events#call-preparing)
+handler this is the per-turn contract — `await` it (or return the promise) and
+the server holds the generation until it lands.
+
+Resolves with the resulting message count. **Rejects** if the server never
+acknowledges the request (`REQUEST_TIMEOUT` after 10 s) or refuses it
+(`REQUEST_REJECTED`, e.g. the call has no server-side LLM). Not awaiting it is
+safe — a rejection you never look at cannot crash the process.
 
 ### `addContext(text)`
 

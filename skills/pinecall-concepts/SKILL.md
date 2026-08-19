@@ -20,13 +20,13 @@ table below indexes every page; open the `references/…` file for the full text
 | **Server-side vs Client-side LLM** | The single most important architectural decision when building a Pinecall agent. | [`references/concepts/server-vs-client-llm.md`](references/concepts/server-vs-client-llm.md) · [docs](https://docs.pinecall.io/concepts/server-vs-client-llm) |
 | **Turn Detection** | How Pinecall detects when the user finishes speaking and manages conversation turns. | [`references/concepts/turn-detection.md`](references/concepts/turn-detection.md) · [docs](https://docs.pinecall.io/concepts/turn-detection) |
 | **Hot-Reload** | Change voice, language, prompt, tools — even during an active call. | [`references/concepts/hot-reload.md`](references/concepts/hot-reload.md) · [docs](https://docs.pinecall.io/concepts/hot-reload) |
-| **Deployment Topologies** | Embedded, standalone, or headless — pick the topology that fits your architecture. | [`references/concepts/deployment-topologies.md`](references/concepts/deployment-topologies.md) · [docs](https://docs.pinecall.io/concepts/deployment-topologies) |
+| **Managed vs Bring-Your-Own-Key** | Which STT/TTS/LLM models Pinecall serves with its own keys, and which require yours. | [`references/reference/managed-vs-byok.md`](references/reference/managed-vs-byok.md) · [docs](https://docs.pinecall.io/reference/managed-vs-byok) |
 
 
 ## House rules — always apply
 
 - **Example defaults** (use these exact strings unless the user asks otherwise):
-  `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`.
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5.4-nano"`, `voice: "elevenlabs/sarah"`.
   **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
   only for languages Flux doesn't support (e.g. Arabic).
 - **Turn detection & VAD are auto-derived from the STT provider — never set

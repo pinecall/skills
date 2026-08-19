@@ -5,11 +5,11 @@ description: >-
 license: MIT
 ---
 
-# Web components
+# @pinecall/web — Web components
 
 @pinecall/web web components — framework-agnostic custom elements.
 
-This skill bundles the official Pinecall documentation for **Web components**. The
+This skill bundles the official Pinecall documentation for **@pinecall/web — Web components**. The
 table below indexes every page; open the `references/…` file for the full text
 (loaded on demand). Source of truth: <https://docs.pinecall.io>.
 
@@ -21,7 +21,7 @@ table below indexes every page; open the `references/…` file for the full text
 ## House rules — always apply
 
 - **Example defaults** (use these exact strings unless the user asks otherwise):
-  `stt: "deepgram/flux"`, `llm: "openai/gpt-5-chat-latest"`, `voice: "elevenlabs/sarah"`.
+  `stt: "deepgram/flux"`, `llm: "openai/gpt-5.4-nano"`, `voice: "elevenlabs/sarah"`.
   **NEVER use `deepgram/nova-2`** — it is not supported. Use `deepgram/nova-3`
   only for languages Flux doesn't support (e.g. Arabic).
 - **Turn detection & VAD are auto-derived from the STT provider — never set
